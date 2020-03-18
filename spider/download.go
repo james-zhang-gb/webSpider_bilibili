@@ -22,18 +22,20 @@ func detectExtensionName(url string) string {
 func DownloadImg(fileName, url string) {
 	fileName += detectExtensionName(url)
 	r, err := chromeGet(url)
+	
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("chromeGet err=",err)
 		return
 	}
+	defer r.Body.Close()
 	s, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ioutil.ReadAll err=",err)
 		return
 	}
 	err = ioutil.WriteFile(fileName, s, 0666)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ioutil.WriteFile err=",err)
 		fmt.Printf("保存图片[%s]失败", fileName)
 		return
 	}
@@ -42,14 +44,25 @@ func DownloadImg(fileName, url string) {
 
 // SaveImgByTag ... 保存图片到对应标签文件夹
 func SaveImgByTag(m []ImgListInfo){
+	var ch chan int
+	ch=make(chan int)
+	chNum:=0
 	for _,v :=range m{
-		os.MkdirAll("image/"+v.Tag,os.ModePerm)
+		os.MkdirAll("image/recommed/"+v.Tag,os.ModePerm)
 		num:=1
 		for _,url:=range v.ImgSrc{
-			fileName:="image/"+v.Tag+"/"+v.Title+"_"+strconv.Itoa(num)
+			fileName:="image/recommed/"+v.Tag+"/"+v.Title+"_"+strconv.Itoa(num)
 			num++
-			DownloadImg(fileName,url)
+			chNum++
+			go func (fileName string,url string){
+				DownloadImg(fileName,url)
+				ch<-1
+				}(fileName,url)
 		}
+		
+	}
+	for i:=0;i<chNum;i++{
+		<-ch	
 	}
 
 }
