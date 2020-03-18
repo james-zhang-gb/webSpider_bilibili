@@ -1,4 +1,4 @@
-package urls
+package spider
 
 import (
 	"fmt"
