@@ -77,7 +77,7 @@ func GetTag(id int)string{
 //模仿浏览器访问链接
 func chromeGet(url string) (r *http.Response, err error) {
 	clt := http.DefaultClient
-	// 添加代理地址
+	// 添加代理地址 
 	proxy, _ := URL.Parse("http://127.0.0.1:1080")
 	tr := http.Transport{
 		Proxy: http.ProxyURL(proxy),
