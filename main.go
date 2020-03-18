@@ -15,6 +15,7 @@ func client(address string, ch chan<- int, num int) {
 }
 func main() {
 	var ch chan int
+	//并发爬取各页面
 	for i := 1; i <= 20; i++ {
 		go client("https://api.vc.bilibili.com/link_draw/v2/Doc/list?category=all&type=hot&page_num="+strconv.Itoa(i)+"page_size=20", ch, i)
 	}
