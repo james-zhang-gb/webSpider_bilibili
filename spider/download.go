@@ -43,15 +43,15 @@ func DownloadImg(fileName, url string) {
 }
 
 // SaveImgByTag ... 保存图片到对应标签文件夹
-func SaveImgByTag(m []ImgListInfo){
+func SaveImgByTag(m []ImgListInfo,path string){
 	var ch chan int
 	ch=make(chan int)
 	chNum:=0
 	for _,v :=range m{
-		os.MkdirAll("image/recommed/"+v.Tag,os.ModePerm)
+		os.MkdirAll(path+v.Tag,os.ModePerm)
 		num:=1
 		for _,url:=range v.ImgSrc{
-			fileName:="image/recommed/"+v.Tag+"/"+v.Title+"_"+strconv.Itoa(num)
+			fileName:=path+v.Tag+"/"+v.Title+"_"+strconv.Itoa(num)
 			num++
 			chNum++
 			go func (fileName string,url string){

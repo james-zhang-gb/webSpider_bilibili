@@ -19,20 +19,21 @@ func client(address string, ch chan<- int, num int) {
 		ch <- num
 		return
 	}
-	spider.SaveImgByTag(l)
+	spider.SaveImgByTag(l,"image/")
 	ch <- num
 }
 func main() {
 	spider.UseProxy = "http://127.0.0.1:1080"
-	downloadImageFromJSON("recommed.json")
+	saveImgSrcJSON(0,5,"recommed2.json")
+	downloadImageFromJSON("recommed2.json","image/recommed/")
 }
-func downloadImageFromJSON(jsonName string) {
+func downloadImageFromJSON(jsonName string,path string) {
 	list := make([]spider.ImgListInfo, 0)
 	f, _ := ioutil.ReadFile(jsonName)
 	json.Unmarshal(f, &list)
-	spider.SaveImgByTag(list)
+	spider.SaveImgByTag(list,path)
 }
-func saveImgSrcJSON(pagea, pageb int) {
+func saveImgSrcJSON(pagea, pageb int,jsonName string) {
 	list := make([]spider.ImgListInfo, 0)
 	var ch chan []spider.ImgListInfo
 	ch = make(chan []spider.ImgListInfo)
@@ -57,7 +58,7 @@ func saveImgSrcJSON(pagea, pageb int) {
 				fmt.Println("json.Marshal err=", err)
 				return
 			}
-			if err := ioutil.WriteFile("recommed.json", outputData, 0666); err != nil {
+			if err := ioutil.WriteFile(jsonName, outputData, 0666); err != nil {
 				fmt.Println("ioutil.WriteFile err=", err)
 			}
 			fmt.Println("已完成",i+1-pagea)
@@ -71,7 +72,7 @@ func saveImgSrcJSON(pagea, pageb int) {
 func saveImgSrcToJSONSlow(pagea,pageb int){
 	list := make([]spider.ImgListInfo, 0)
 	for i := pagea; i <= pageb; i++ {
-			l, err := spider.GetList("https://api.vc.bilibili.com/link_draw/v2/Doc/list?category=all&type=hot&page_num=" + strconv.Itoa(i) + "page_size=20")
+			l, err := spider.GetList(rank)
 			if err != nil {
 				fmt.Println("spider.GetList err=", err)
 			}
@@ -81,7 +82,7 @@ func saveImgSrcToJSONSlow(pagea,pageb int){
 				fmt.Println("json.Marshal err=", err)
 				return
 			}
-			if err := ioutil.WriteFile("imglist.json", outputData, 0666); err != nil {
+			if err := ioutil.WriteFile("rank_month.json", outputData, 0666); err != nil {
 				fmt.Println("ioutil.WriteFile err=", err)
 			}
 	}
